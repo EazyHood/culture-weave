@@ -1,0 +1,35 @@
+{
+  "provenance": "Authored synthetic planning scenario. Slot labels are not scheduled dates. The budget is a constraint for this exercise, not money or authorisation to spend.",
+  "constraints": {
+    "slots": [
+      { "id": "session-1", "minMinutes": 40, "maxMinutes": 60 },
+      { "id": "session-2", "minMinutes": 40, "maxMinutes": 60 },
+      { "id": "session-3", "minMinutes": 40, "maxMinutes": 60 }
+    ],
+    "totalBudgetMinor": "1500",
+    "currency": "USD",
+    "language": "es",
+    "minDistinctMedia": 3
+  },
+  "ranking": {
+    "provenance": {
+      "kind": "synthetic-ranking",
+      "notice": "Hand-authored priority order for deterministic tests. Not a Qloo response, API replay, cultural-affinity measurement or model output."
+    },
+    "orderedItemIds": [
+      "local:book:solitude",
+      "local:movie:spirited-away",
+      "local:artist:toto",
+      "local:book:little-prince",
+      "local:movie:serpent",
+      "local:artist:miles",
+      "local:movie:long-workshop",
+      "local:book:unknown-cost",
+      "local:artist:unavailable",
+      "local:book:english-only",
+      "local:movie:unknown-permission",
+      "local:artist:unknown-duration"
+    ]
+  },
+  "removeForReplan": ["local:movie:spirited-away"]
+}

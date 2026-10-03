@@ -1,0 +1,17 @@
+{
+  "provenance": "Authored probe design, not user research and not Qloo responses. Public titles are search targets; entity coverage is unknown.",
+  "groups": [
+    { "id": "latin-american-stories", "description": "Coverage probe involving Spanish titles and Latin American creators; not an inferred demographic audience." },
+    { "id": "broad-comparator", "description": "Contrasting public cultural references to detect signal sensitivity; not a real user cohort." }
+  ],
+  "queries": [
+    { "id": "solitude", "group": "latin-american-stories", "query": "Cien años de soledad", "type": "urn:entity:book", "identityHint": "The novel by Gabriel García Márquez; verify title/AKA and author metadata. Do not silently substitute the TV series." },
+    { "id": "serpent", "group": "latin-american-stories", "query": "El abrazo de la serpiente", "type": "urn:entity:movie", "identityHint": "The 2015 film directed by Ciro Guerra; verify film/year metadata." },
+    { "id": "toto", "group": "latin-american-stories", "query": "Totó la Momposina", "type": "urn:entity:artist", "identityHint": "The Colombian musical artist, not a similarly named act." },
+    { "id": "little-prince", "group": "broad-comparator", "query": "The Little Prince", "type": "urn:entity:book", "identityHint": "The book by Antoine de Saint-Exupéry; verify creator and work, not an adaptation." },
+    { "id": "spirited-away", "group": "broad-comparator", "query": "Spirited Away", "type": "urn:entity:movie", "identityHint": "The 2001 Hayao Miyazaki film; verify film/year metadata." },
+    { "id": "miles", "group": "broad-comparator", "query": "Miles Davis", "type": "urn:entity:artist", "identityHint": "The jazz musician; verify identity, not a tribute act." },
+    { "id": "ambiguous", "control": "ambiguous", "query": "Home", "type": "urn:entity:movie", "identityHint": "Deliberately insufficient identity. No intended film/year is specified; do not automatically accept the first match." },
+    { "id": "absent", "control": "nonexistent", "query": "Culture Weave Imaginary Book 83f0e79d", "type": "urn:entity:book", "identityHint": "Invented negative-control title. A fuzzy search result is not a valid identity match." }
+  ]
+}
