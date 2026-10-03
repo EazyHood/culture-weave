@@ -16,7 +16,7 @@ export async function runAgent(input,{client,exampleRanking}={}) {
     trace.push({tool:'load_example_order',summary:'Used the clearly labelled example priority order. No API call.'});
   } else {
     if(!client)throw new ApiError('Qloo client is unavailable.',503);
-    if(!Array.isArray(references)||references.length<1||references.length>5||references.some(r=>!UUID.test(r.id??'')))throw new ApiError('Resolve and choose one to five cultural references before live planning.');
+    if(!Array.isArray(references)||references.length<1||references.length>5||references.some(r=>typeof r?.id!=='string'||!UUID.test(r.id)))throw new ApiError('Resolve and choose one to five cultural references before live planning.');
     const buckets=[];
     for(const medium of MEDIA) {
       const candidates=catalog.items.filter(i=>i.medium===medium&&i.availability==='available'&&!unavailableItemIds.includes(i.id)&&UUID.test(i.qlooId??'')&&i.qlooConfirmed===true);
@@ -37,5 +37,5 @@ export async function runAgent(input,{client,exampleRanking}={}) {
   const plan=previousPlan?replanCycle({catalog,constraints,ranking,previousPlan,unavailableItemIds}):planCycle({catalog,constraints,ranking});
   trace.push({tool:previousPlan?'repair_cycle':'solve_cycle',summary:plan.status==='feasible'?`Found three sessions; ${plan.objective.preservedSessionCount??0} prior assignments retained.`:'No complete plan satisfies the current constraints. No activity was invented.'});
   trace.push({tool:'validate_cycle',summary:plan.status==='feasible'?`Verified distinct resources, ${plan.totals.distinctMedia} media and total cost ${plan.totals.costMinor} minor units.`:plan.failures.map(f=>f.message).join(' ')});
-  return {mode,plan,evidence,trace,generatedAt:new Date().toISOString(),agent:'Bounded deterministic planning agent; no language model is used.'};
+  return {mode,referenceIds:mode==='live'?references.map(r=>r.id):[],plan,evidence,trace,generatedAt:new Date().toISOString(),agent:'Bounded deterministic planning agent; no language model is used.'};
 }
