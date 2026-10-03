@@ -2,7 +2,21 @@
 
 A programme desk for a small library: build three discussions from a finite catalogue, check practical constraints, and repair the sequence when a resource becomes unavailable.
 
-**Current evidence:** the example works end to end; the automated test suite passes. The real Qloo transport is implemented but has not yet been run with an issued key. Example priorities, availability, costs, durations and permission states are authored scenario data, never claimed as Qloo responses or real library holdings. Do not describe this version as an eligible completed hackathon entry until live integration and public access are verified.
+**Current evidence:** both the authored example and the live Qloo flow were exercised on 3 October 2026. The public app resolved six catalogue identities, ranked a fixed shortlist in three media and repaired a programme after removing its selected film. Availability, costs, activity durations and permission states remain invented scenario data, not Qloo responses or real library holdings.
+
+Public demo: https://culture-weave.bmhennessy.chatgpt.site
+
+## Live verification
+
+The test used the public film **Princess Mononoke (1997)** as a reference, Qloo ID `C2B5C855-2C57-45E4-B573-2BC939CA7FFA`. It is an authored test scenario, not a claim about a real person's taste.
+
+| Case | Observed outcome |
+| --- | --- |
+| Initial live programme | The Little Prince, Spirited Away and Miles Davis; $8 in scenario costs; 150 discussion minutes |
+| Remove Spirited Away | El abrazo de la serpiente replaces it; the book and artist remain; $11; 140 minutes |
+| Missing Qloo ranking | The selected Spanish edition of Cien años de soledad was absent from the returned shortlist and was excluded |
+
+All six catalogue identities resolved in Search. Initial Insights returned one of two books, two films and two artists. This validates the tested entities and flow only; it does not establish universal catalogue coverage. The 42 automated tests use explicit fixtures and remain separate from these real API checks.
 
 ## Run
 
@@ -33,7 +47,7 @@ The bounded planning agent is deterministic, not an LLM. It chooses ranking tool
 - `POST /api/search`: `{query, medium}` with medium `book`, `movie` or `artist`.
 - `POST /api/plan`: `{catalog, constraints, mode, references, previousPlan?, unavailableItemIds?}`.
 
-Only `https://hackathon.api.qloo.com/search` and `/v2/insights` are used. Requests have 15-second timeouts, no redirects, no retry and no alternate host. Authentication is `X-Api-Key`. Responses are reduced to public identity fields; arbitrary metadata and credentials are not echoed. The demo permits two concurrent live runs and twenty live operations per minute **per running instance/isolate**. This is a modest demo safeguard, not a distributed billing quota; a larger launch needs durable rate limiting.
+Only `https://hackathon.api.qloo.com/search` and `/v2/insights` are used. Requests have 15-second timeouts, no followed redirects, no retry and no alternate host. Authentication is `X-Api-Key`. Responses are bounded to one MiB and reduced to public identity fields; arbitrary metadata and credentials are not echoed. Search `types` and Insights `type`/`subtype` are validated according to their separate formats. The demo permits two concurrent live runs and twenty live operations per minute **per running instance/isolate**. This is a modest demo safeguard, not a distributed billing quota; a larger launch needs durable rate limiting.
 
 ## Build / host
 
@@ -51,7 +65,7 @@ The browser initially shows six real cultural titles with invented planning fact
 
 ## Provenance and license
 
-Continues the original Culture Weave project prepared 1 October 2026 in Colombia (2 October UTC), including its preflight and planner. The working UI, server and bounded agent were added 3 October 2026. AI assistance was used for implementation, tests, design and documentation. Human review and real API validation remain part of completion.
+Continues the original Culture Weave project prepared 1 October 2026 in Colombia (2 October UTC), including its preflight and planner. The working UI, server, bounded agent and live API validation were added 3 October 2026. AI assistance was used for implementation, tests, design and documentation. Real event organisers must review availability, permissions and all final programme choices.
 
 MIT, see [LICENSE](LICENSE). The license covers this code and authored fixtures, not Qloo's data, trademarks or third-party works named in examples.
 
