@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "provenance": {
+    "kind": "synthetic-catalog",
+    "notice": "Hand-authored planning exercise. Local IDs, availability, permissions, activity durations and costs are invented scenario inputs. Titles identify discussion subjects only. No library holdings, screening rights, recordings, events or real-world availability are claimed."
+  },
+  "items": [
+    { "id": "local:book:solitude", "name": "Cien años de soledad", "activity": "Facilitated discussion after independent reading", "medium": "book", "availability": "available", "durationMinutes": 45, "costMinor": "300", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:movie:spirited-away", "name": "Spirited Away", "activity": "Film discussion; no screening or film copy included", "medium": "movie", "availability": "available", "durationMinutes": 60, "costMinor": "400", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:artist:toto", "name": "Totó la Momposina", "activity": "Guided discussion of an artist; no recorded music supplied", "medium": "artist", "availability": "available", "durationMinutes": 50, "costMinor": "200", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:book:little-prince", "name": "The Little Prince", "activity": "Facilitated discussion after independent reading", "medium": "book", "availability": "available", "durationMinutes": 40, "costMinor": "100", "currency": "USD", "languages": ["es", "en"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:movie:serpent", "name": "El abrazo de la serpiente", "activity": "Film discussion; no screening or film copy included", "medium": "movie", "availability": "available", "durationMinutes": 50, "costMinor": "700", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:artist:miles", "name": "Miles Davis", "activity": "Guided discussion of an artist; no recorded music supplied", "medium": "artist", "availability": "available", "durationMinutes": 50, "costMinor": "300", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:movie:long-workshop", "name": "Film discussion workshop — extended format", "activity": "Invented extended workshop for the duration control", "medium": "movie", "availability": "available", "durationMinutes": 90, "costMinor": "100", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:book:unknown-cost", "name": "Reading circle — unconfirmed materials", "activity": "Invented resource with missing cost evidence", "medium": "book", "availability": "available", "durationMinutes": 45, "costMinor": null, "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:artist:unavailable", "name": "Music discussion — unavailable facilitator", "activity": "Invented unavailable resource", "medium": "artist", "availability": "unavailable", "durationMinutes": 45, "costMinor": "100", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:book:english-only", "name": "Reading circle — English-only format", "activity": "Invented language control", "medium": "book", "availability": "available", "durationMinutes": 45, "costMinor": "0", "currency": "USD", "languages": ["en"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:movie:unknown-permission", "name": "Film activity — permission not confirmed", "activity": "Invented permission control", "medium": "movie", "availability": "available", "durationMinutes": 50, "costMinor": "100", "currency": "USD", "languages": ["es"], "permissionStatus": "unknown" },
+    { "id": "local:artist:unknown-duration", "name": "Music discussion — duration not confirmed", "activity": "Invented duration control", "medium": "artist", "availability": "available", "durationMinutes": null, "costMinor": "100", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" },
+    { "id": "local:book:unranked", "name": "Reading circle — not in the supplied ranking", "activity": "Invented ranking-coverage control", "medium": "book", "availability": "available", "durationMinutes": 45, "costMinor": "0", "currency": "USD", "languages": ["es"], "permissionStatus": "assumed-for-demo" }
+  ]
+}
