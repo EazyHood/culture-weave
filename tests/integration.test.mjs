@@ -12,6 +12,7 @@ const scenario=JSON.parse(await readFile(new URL('../fixtures/planning-scenario.
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 const input=()=>({catalog:structuredClone(catalog),constraints:structuredClone(scenario.constraints),mode:'example'});
 const entity=(n,medium)=>({entity_id:id(n),name:'Fixture '+n,types:['urn:entity:'+medium]});
+const insightEntity=(n,medium)=>({entity_id:id(n),name:'Fixture '+n,type:'urn:entity',subtype:'urn:entity:'+medium});
 const req=(path,body,headers={})=>new Request('https://example.test'+path,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(body)});
 test('example agent plans and repairs while preserving two assignments without API',async()=>{
  const data=input();let network=0;const opts={exampleRanking:scenario.ranking.orderedItemIds,client:{rank(){network++;throw new Error('must not call')}}};
@@ -23,6 +24,7 @@ test('live agent uses returned shortlist order and omits unreturned resources',a
  const data=input();data.mode='live';data.references=[{id:id(99)}];data.catalog.items.slice(0,6).forEach((x,i)=>Object.assign(x,{qlooId:id(i+1),qlooConfirmed:true}));
  const calls=[];const result=await runAgent(data,{client:{async rank(signals,ids,medium){calls.push({signals,ids,medium});return [{id:ids[0]}];}}});
  assert.equal(calls.length,3);assert.equal(result.plan.status,'feasible');assert.equal(result.evidence.length,3);assert.equal(result.plan.provenance.ranking.kind,'external-order');
+ assert.deepEqual(result.referenceIds,[id(99)]);
  assert.deepEqual(result.plan.sessions.map(x=>x.itemId),data.catalog.items.slice(0,3).map(x=>x.id));
 });
 test('live provider errors propagate; no fake fallback plan',async()=>{
@@ -30,11 +32,29 @@ test('live provider errors propagate; no fake fallback plan',async()=>{
  await assert.rejects(()=>runAgent(data,{client:{rank:async()=>{throw new Error('provider rejected')}}}),/provider rejected/);
 });
 test('provider sends only documented host, header and params',async()=>{
- let seen;const client=qlooClient({apiKey:'fixture-key',fetchImpl:async(url,options)=>{seen={url,options};return Response.json({results:{entities:[entity(1,'book')]}});}});
- await client.rank([id(99)],[id(1)],'book');assert.equal(seen.url.origin,BASE_URL);assert.equal(seen.url.pathname,'/v2/insights');assert.equal(seen.options.headers['X-Api-Key'],'fixture-key');assert.equal(seen.options.redirect,'error');assert.equal(seen.url.searchParams.get('filter.results.entities'),id(1));assert.ok(!seen.url.href.includes('fixture-key'));
+ let seen;const client=qlooClient({apiKey:'fixture-key',fetchImpl:async(url,options)=>{seen={url,options};return Response.json({results:{entities:[insightEntity(1,'book')]}});}});
+ await client.rank([id(99)],[id(1)],'book');assert.equal(seen.url.origin,BASE_URL);assert.equal(seen.url.pathname,'/v2/insights');assert.equal(seen.options.headers['X-Api-Key'],'fixture-key');assert.equal(seen.options.redirect,'manual');assert.equal(seen.url.searchParams.get('filter.results.entities'),id(1));assert.ok(!seen.url.href.includes('fixture-key'));
+});
+
+test('provider redirects are not followed and foreign locations are not exposed',async()=>{
+ let calls=0;const client=qlooClient({apiKey:'fixture-key',fetchImpl:async()=>{calls++;return new Response(null,{status:302,headers:{location:'https://foreign.example/fixture-key'}});}});
+ await assert.rejects(()=>client.search('title','book'),error=>error.status===502&&/No redirect was followed/.test(error.message)&&!error.message.includes('fixture-key')&&!error.message.includes('foreign.example'));
+ assert.equal(calls,1);
+});
+
+test('Insights uses type and subtype while Search still requires its types array',async()=>{
+ const correct=insightEntity(1,'book');
+ const client=qlooClient({apiKey:'fixture-key',fetchImpl:async()=>Response.json({results:{entities:[correct]}})});
+ assert.deepEqual((await client.rank([id(99)],[id(1)],'book'))[0].types,['urn:entity:book']);
+ for(const entry of [{...correct,subtype:'urn:entity:movie'},{...correct,type:'urn:entity:book'},{...correct,subtype:undefined},entity(1,'book')]){
+  const bad=qlooClient({apiKey:'fixture-key',fetchImpl:async()=>Response.json({results:{entities:[entry]}})});
+  await assert.rejects(()=>bad.rank([id(99)],[id(1)],'book'),error=>error.status===502);
+ }
+ const wrongSearch=qlooClient({apiKey:'fixture-key',fetchImpl:async()=>Response.json({results:[correct]})});
+ await assert.rejects(()=>wrongSearch.search('book','book'),error=>error.status===502);
 });
 test('provider rejects ignored filter, duplicate IDs and wrong schema',async()=>{
- for(const payload of [{results:{entities:[entity(2,'book')]}},{results:{entities:[entity(1,'book'),entity(1,'book')]}},{results:{entities:[{name:'No id'}]}}]){
+ for(const payload of [{results:{entities:[insightEntity(2,'book')]}},{results:{entities:[insightEntity(1,'book'),insightEntity(1,'book')]}},{results:{entities:[{name:'No id'}]}}]){
  const client=qlooClient({apiKey:'fixture-key',fetchImpl:async()=>Response.json(payload)});await assert.rejects(()=>client.rank([id(99)],[id(1)],'book'));
  }
 });
@@ -89,6 +109,16 @@ test('array-shaped ranking IDs are rejected before a provider call',async()=>{
  let calls=0;const client=qlooClient({apiKey:'fixture-key',fetchImpl:()=>{calls++;}});
  await assert.rejects(()=>client.rank([[id(99)]],[id(1)],'book'),error=>error.status===400);
  assert.equal(calls,0);
+});
+
+test('oversized provider bodies are bounded with or without a content-length header',async()=>{
+ for(const declared of [true,false]){
+  let cancelled=false;
+  const stream=new ReadableStream({pull(controller){controller.enqueue(new Uint8Array(1024*1024+1));},cancel(){cancelled=true;}});
+  const client=qlooClient({apiKey:'fixture-key',fetchImpl:async()=>new Response(stream,{headers:declared?{'content-length':'1048577'}:{}})});
+  await assert.rejects(()=>client.search('title','book'),error=>error.status===502&&/one-megabyte/.test(error.message));
+  assert.equal(cancelled,true);
+ }
 });
 
 test('local Node server rejects a foreign Host even when Origin matches it',async t=>{
